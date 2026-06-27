@@ -1,11 +1,9 @@
 ﻿using Delhivery.Data.Exceptions;
 using Delhivery.Data.Models;
+using Microsoft.Data.SqlClient;
 using System;
 using System.Collections.Generic;
-using System.Data.SqlClient;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Delhivery.Data
 {
@@ -16,6 +14,32 @@ namespace Delhivery.Data
         public ShipmentRepository(string connectionString)
         {
             _connectionString = connectionString;
+        }
+
+
+        public void Book(Shipment shipment)
+        {
+            // inserting new shipment
+            using (SqlConnection connection = new SqlConnection(_connectionString))
+            {
+                string query = @"INSERT INTO Shipments
+                        (AWBNumber, SenderName, ReceiverName, Origin, Destination, WeightKg, Status)
+                        VALUES
+                        (@AWBNumber, @SenderName, @ReceiverName, @Origin, @Destination, @WeightKg, @Status)";
+
+                SqlCommand command = new SqlCommand(query, connection);
+
+                command.Parameters.AddWithValue("@AWBNumber", shipment.AWBNumber);
+                command.Parameters.AddWithValue("@SenderName", shipment.SenderName);
+                command.Parameters.AddWithValue("@ReceiverName", shipment.ReceiverName);
+                command.Parameters.AddWithValue("@Origin", shipment.Origin);
+                command.Parameters.AddWithValue("@Destination", shipment.Destination);
+                command.Parameters.AddWithValue("@WeightKg", shipment.WeightKg);
+                command.Parameters.AddWithValue("@Status", shipment.Status);
+
+                connection.Open();
+                command.ExecuteNonQuery();
+            }
         }
 
         public List<Shipment> GetAll()
@@ -29,11 +53,13 @@ namespace Delhivery.Data
 
                 connection.Open();
 
-                SqlDataReader reader = command.ExecuteReader();
-
-                while (reader.Read())
+                // reading all shipment records
+                using (SqlDataReader reader = command.ExecuteReader())
                 {
-                    shipments.Add(MapShipment(reader));
+                    while (reader.Read())
+                    {
+                        shipments.Add(MapShipment(reader));
+                    }
                 }
             }
 
@@ -53,11 +79,13 @@ namespace Delhivery.Data
 
                 connection.Open();
 
-                SqlDataReader reader = command.ExecuteReader();
-
-                if (reader.Read())
+                // reading all shipment records
+                using (SqlDataReader reader = command.ExecuteReader())
                 {
-                    return MapShipment(reader);
+                    if(reader.Read())
+                    {
+                        return MapShipment(reader);
+                    }
                 }
 
                 throw new ShipmentNotFoundException(awb);
@@ -93,6 +121,75 @@ namespace Delhivery.Data
                 command.ExecuteNonQuery();
             }
         }
+
+        public ShipmentStatsDto GetShipmentStats()
+        {
+            using (SqlConnection connection = new SqlConnection(_connectionString))
+            {
+                string query = @"SELECT Status, COUNT(*) AS Count
+                         FROM Shipments
+                         GROUP BY Status";
+
+                SqlCommand command = new SqlCommand(query, connection);
+
+                connection.Open();
+
+                List<ShipmentStats> stats = new List<ShipmentStats>();
+
+                // reading status count from database
+                using (SqlDataReader reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        stats.Add(new ShipmentStats
+                        {
+                            Status = reader["Status"].ToString(),
+                            Count = Convert.ToInt32(reader["Count"])
+                        });
+                    }
+                }
+
+                return new ShipmentStatsDto
+                {
+                    Booked = stats.FirstOrDefault(s => s.Status == "Booked")?.Count ?? 0,
+                    InTransit = stats.FirstOrDefault(s => s.Status == "In Transit")?.Count ?? 0,
+                    OutForDelivery = stats.FirstOrDefault(s => s.Status == "Out for Delivery")?.Count ?? 0,
+                    Delivered = stats.FirstOrDefault(s => s.Status == "Delivered")?.Count ?? 0,
+                    RTO = stats.FirstOrDefault(s => s.Status == "RTO")?.Count ?? 0
+                };
+            }
+        }
+
+        /*public List<ShipmentStats> GetShipmentStats()
+        {
+            List<ShipmentStats> stats = new List<ShipmentStats>();
+
+            using (SqlConnection connection = new SqlConnection(_connectionString))
+            {
+                string query = @"SELECT Status, COUNT(*) AS Count
+                         FROM Shipments
+                         GROUP BY Status";
+
+                SqlCommand command = new SqlCommand(query, connection);
+
+                connection.Open();
+
+                // getting count for each status
+                using (SqlDataReader reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        stats.Add(new ShipmentStats
+                        {
+                            Status = reader["Status"].ToString(),
+                            Count = Convert.ToInt32(reader["Count"])
+                        });
+                    }
+                }
+            }
+
+            return stats;
+        }*/
 
         private Shipment MapShipment(SqlDataReader reader)
         {

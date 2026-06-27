@@ -1,0 +1,8 @@
+<Solution>
+  <Folder Name="/Database/" />
+  <Folder Name="/Solution Items/">
+    <File Path=".gitignore" />
+  </Folder>
+  <Project Path="Delhivery.ConsoleApp/Delhivery.ConsoleApp.csproj" Id="e335a95b-b98d-4ed3-97a8-1d9b694e9d4f" />
+  <Project Path="Delhivery.Data/Delhivery.Data.csproj" Id="d8f5e5a3-cf1a-440d-8af9-1f5f8a222a1c" />
+</Solution>

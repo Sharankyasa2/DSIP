@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shipment Intelligence Platform</title>
+
+    <link rel="stylesheet" href="style.css">
+
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+</head>
+
+<body>
+
+    <!-- page header -->
+    <header class="header">
+
+        <div>
+            <h1>DELHIVERY</h1>
+            <p>Shipment Intelligence Platform</p>
+        </div>
+
+    </header>
+
+
+    <main class="container">
+
+        <!-- stats cards -->
+        <section class="stats-container">
+
+            <div class="stat-card">
+                <h4>Booked</h4>
+                <h2 id="bookedCount">0</h2>
+            </div>
+
+            <div class="stat-card">
+                <h4>In Transit</h4>
+                <h2 id="inTransitCount">0</h2>
+            </div>
+
+            <div class="stat-card">
+                <h4>Out For Delivery</h4>
+                <h2 id="outForDeliveryCount">0</h2>
+            </div>
+
+            <div class="stat-card">
+                <h4>Delivered</h4>
+                <h2 id="deliveredCount">0</h2>
+            </div>
+
+            <div class="stat-card">
+                <h4>RTO</h4>
+                <h2 id="rtoCount">0</h2>
+            </div>
+
+            <div class="stat-card">
+                <h4>Total Shipments</h4>
+                <h2 id="totalCount">0</h2>
+            </div>
+
+        </section>
+
+
+        <section class="top-section">
+
+    <!-- booking form -->
+    <div class="card booking-card">
+
+        <h2>Book Shipment</h2>
+        <p class="section-subtitle">
+            Fill the details to create a new shipment
+        </p>
+
+        <form id="shipmentForm">
+
+            <div class="input-grid">
+
+                <div class="input-group">
+                    <label>AWB Number</label>
+                    <input type="text" id="awbNumber">
+                </div>
+
+                <div class="input-group">
+                    <label>Sender Name</label>
+                    <input type="text" id="senderName">
+                </div>
+
+                <div class="input-group">
+                    <label>Receiver Name</label>
+                    <input type="text" id="receiverName">
+                </div>
+
+                <div class="input-group">
+                    <label>Weight (Kg)</label>
+                    <input type="number" id="weightKg" step="0.1">
+                </div>
+
+                <div class="input-group">
+                    <label>Origin</label>
+                    <input type="text" id="origin">
+                </div>
+
+                <div class="input-group">
+                    <label>Destination</label>
+                    <input type="text" id="destination">
+                </div>
+
+            </div>
+
+            <button class="btn btn-primary" type="submit">
+                Book Shipment
+            </button>
+
+        </form>
+
+    </div>
+
+    <!-- tracking -->
+    <div class="card track-card">
+
+        <h2>Track Shipment</h2>
+
+        <p class="section-subtitle">
+            Search shipment using AWB Number
+        </p>
+
+        <input
+            type="text"
+            id="trackAwb"
+            placeholder="Enter AWB Number">
+
+        <button
+            id="trackBtn"
+            class="btn btn-secondary">
+
+            Track Shipment
+
+        </button>
+
+        <div id="trackResult">
+
+        </div>
+
+    </div>
+
+</section>
+
+
+        <!-- filter -->
+        <section class="table-header">
+
+    <div>
+
+        <h2>Shipment List</h2>
+
+        <p class="section-subtitle">
+            Manage and track all booked shipments
+        </p>
+
+    </div>
+
+    <div class="filter-box">
+
+        <label>Status</label>
+
+        <select id="statusFilter">
+
+            <option value="All">All</option>
+            <option>Booked</option>
+            <option>In Transit</option>
+            <option>Out for Delivery</option>
+            <option>Delivered</option>
+            <option>RTO</option>
+
+        </select>
+
+    </div>
+
+</section>
+
+
+        <!-- shipment table -->
+        <section class="card">
+
+            <h2 class="table-title">
+                Shipment List
+            </h2>
+
+            <table>
+
+                <thead>
+
+                    <tr>
+
+                        <th>AWB Number</th>
+                        <th>Sender</th>
+                        <th>Receiver</th>
+                        <th>Route</th>
+                        <th>Weight</th>
+                        <th>Status</th>
+                        <th>Action</th>
+
+                    </tr>
+
+                </thead>
+
+                <tbody id="shipmentTable">
+
+                </tbody>
+
+            </table>
+
+        </section>
+
+    </main>
+
+
+    <!-- loading text -->
+    <div id="loader">
+
+        Loading...
+
+    </div>
+
+
+    <!-- notification -->
+    <div id="notification">
+
+    </div>
+
+
+    <script src="app.js"></script>
+
+</body>
+</html>

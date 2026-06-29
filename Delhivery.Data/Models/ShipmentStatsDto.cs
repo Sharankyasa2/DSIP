@@ -17,5 +17,8 @@ namespace Delhivery.Data.Models
         public int Delivered { get; set; }
 
         public int RTO { get; set; }
+
+        // calculated automatically
+        public int Total => Booked + InTransit + OutForDelivery + Delivered + RTO;
     }
-}
+    }
